@@ -1,0 +1,11 @@
+
+C:\Users\HP>CD C:\Program Files\MySQL\MySQL Server 8.0\bin
+
+C:\Program Files\MySQL\MySQL Server 8.0\bin>mysqldump -u root -p covid_db > G:\db_backup\covid_db_backup.sql
+Enter password: ****
+
+
+C:\Program Files\MySQL\MySQL Server 8.0\bin>mysql -u root -p covid_db < G:\db_backup\covid_db_backup.sql
+Enter password: ****
+
+C:\Program Files\MySQL\MySQL Server 8.0\bin>
