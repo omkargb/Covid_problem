@@ -1,0 +1,18 @@
+/* create */
+
+DELIMITER //  
+Create Trigger after_update_covidtest
+AFTER UPDATE ON new_mh_cases 
+FOR EACH ROW  
+BEGIN 
+UPDATE statewise_testing_details 
+set totalsamples=new.sample_count, negative=new.negative, positive=new.positive 
+where date=new.sample_date and state='Maharashtra' ; 
+END 
+//  
+
+
+/* execute */
+
+UPDATE new_mh_cases set sample_count=49999000, negative=49994000, positive=5000 
+where sample_date='11-08-2021';

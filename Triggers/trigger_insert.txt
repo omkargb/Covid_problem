@@ -1,0 +1,26 @@
+CREATE TABLE `covid_db` (
+  `Sno` INT NOT NULL AUTO_INCREMENT,
+  `sample_date` VARCHAR(10) NOT NULL,
+  `test` VARCHAR(45) NOT NULL,
+  `sample_count` INT NOT NULL,
+  `negative` INT NOT NULL,
+  `positive` INT NOT NULL,
+  PRIMARY KEY (`Sno`));
+
+
+/* Create trigger */
+
+DELIMITER //  
+Create Trigger after_insert_covidtest
+AFTER INSERT ON new_mh_cases FOR EACH ROW  
+BEGIN  
+INSERT INTO statewise_testing_details 
+VALUES (new.sample_date, 'Maharashtra',  new.sample_count, new.negative, new.positive);  
+END 
+//  
+
+
+/* execute */
+
+
+insert into new_mh_cases(sample_date,test,sample_count,negative,positive) values('11-08-2021','rtpcr', 49995000,49990000,5000);

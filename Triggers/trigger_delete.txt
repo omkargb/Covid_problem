@@ -1,0 +1,19 @@
+/* create */ 
+
+use covid_db;
+ DELIMITER $$
+     create trigger before_del_data
+     before DELETE
+     on new_mh_cases
+     for each row
+     begin
+     declare error_message varchar(255);
+     set error_message=('You can not delete the entries.');
+     signal sqlstate '1644' set message_text=error_message;
+     end$$
+DELIMITER $$ 
+
+
+/* execute */ 
+
+delete from new_mh_cases where sno=2;
