@@ -1,0 +1,14 @@
+/* create */
+
+use covid_db;
+
+CREATE VIEW covid_cases_above50L AS    
+select date, cured , deaths, confirmed from covid_19_india
+where confirmed >5000000;
+
+/* execute */
+
+mysql> select * from covid_cases_above50L
+
+/* drop view */
+DROP VIEW covid_cases_above50L;

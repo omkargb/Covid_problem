@@ -1,0 +1,15 @@
+/* create */
+
+use covid_db;
+
+CREATE VIEW one_pt_positive AS    
+SELECT date , state, totalSamples
+FROM statewise_testing_details
+WHERE positive=1;
+
+/* execute */
+
+mysql> select * from one_pt_positive;
+select date, cured , deaths, confirmed from covid_19_india;
+/* drop view */
+DROP VIEW one_pt_positive;

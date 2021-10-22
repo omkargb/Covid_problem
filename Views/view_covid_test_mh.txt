@@ -1,0 +1,18 @@
+/* create */
+
+use covid_db;
+
+CREATE VIEW covid_test_mh AS    
+select date, State, Positive, Negative 
+from statewise_testing_details
+where State='maharashtra' AND Positive >0 AND Negative>0;
+
+
+/* execute */
+
+mysql> select * from covid_test_mh; 
+
+
+/* drop view */
+
+DROP VIEW covid_test_mh;
