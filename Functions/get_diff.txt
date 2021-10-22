@@ -1,0 +1,29 @@
+/* create */
+
+use covid_db;
+DELIMITER //
+CREATE FUNCTION get_new_cases(area varchar(64), olddate varchar(10), newdate varchar(10))
+RETURNS integer
+DETERMINISTIC
+    BEGIN
+    DECLARE confirmed_old int;
+    DECLARE confirmed_new int;
+    
+    Select Confirmed into confirmed_old FROM covid_db.covid_19_india where Date = olddate AND Territory=area;
+    Select Confirmed into confirmed_new FROM covid_db.covid_19_india where Date = newdate AND Territory=area;
+    
+    return (confirmed_new - confirmed_old);
+    END 
+    //
+DELIMITER ; 
+
+
+/* execute */
+
+mysql> SELECT get_new_cases('maharashtra','01-08-2021','02-08-2021') as difference;
++------------+
+| difference |
++------------+
+|       6479 |
++------------+
+1 row in set (0.05 sec)

@@ -1,0 +1,26 @@
+/* create */
+
+use covid_db;
+DELIMITER //
+CREATE FUNCTION get_positivity_percent(indate varchar(10), area varchar(64))
+RETURNS integer
+DETERMINISTIC
+    BEGIN
+    DECLARE positive_rate float;
+    Select (positive*100.00) / TotalSamples into positive_rate FROM covid_db.statewise_testing_details 
+    where State=area AND Date=indate;
+    return positive_rate;
+    END 
+    //
+DELIMITER ; 
+
+
+
+/* execute */
+
+SELECT get_positivity_percent('29-05-2020','kerala') as positivity_percent;
+
+SELECT get_positivity_percent('12-04-2020','delhi') as positivity_percent;
+
+SELECT get_positivity_percent('15-08-2020','maharashtra') as positivity_percent;
+

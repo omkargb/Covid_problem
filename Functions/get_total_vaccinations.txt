@@ -1,0 +1,18 @@
+/* create */
+use covid_db;
+DELIMITER //
+CREATE FUNCTION get_total_vaccinations(area varchar(64))
+RETURNS integer
+DETERMINISTIC
+    BEGIN
+    DECLARE total_vaccin int;
+
+    Select sum(TotalIndividualsVaccinated) into total_vaccin FROM covid_db.covid_vaccine_statewise 
+    where State=area;
+    return total_vaccin;
+    END 
+    //
+DELIMITER ; 
+
+/* execute */
+SELECT get_total_vaccinations('punjab') as total_vaccinations;
