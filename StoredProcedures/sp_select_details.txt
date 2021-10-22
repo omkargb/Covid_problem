@@ -1,0 +1,48 @@
+/* Implement */
+
+ use covid_db;
+
+delimiter //
+CREATE PROCEDURE `sp_details`()
+BEGIN
+DECLARE exit handler for sqlexception
+   BEGIN
+     -- ERROR
+   ROLLBACK;
+ END;
+   
+ DECLARE exit handler for sqlwarning
+  BEGIN
+     -- WARNING
+  ROLLBACK;
+ END;
+ 
+ START TRANSACTION;
+
+/* Queries */
+SELECT date , state, totalSamples
+FROM statewise_testing_details
+WHERE positive=1;
+
+select max(totalSamples) from covid_db.statewise_testing_details;
+ 
+select max(confirmed) from covid_db.covid_19_india where Territory='kerala';
+ 
+select sum(Cured) from covid_db.covid_19_india where Territory='delhi';
+ 
+ COMMIT;
+END
+//
+
+delimiter ;
+
+
+
+/* executing a procedure */
+
+mysql> call sp_details();
+
+
+/* Delete procedure */
+
+DROP PROCEDURE `covid_db`.`sp_details`;

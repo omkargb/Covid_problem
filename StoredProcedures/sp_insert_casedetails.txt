@@ -1,0 +1,42 @@
+/* create */
+
+use covid_db;
+
+delimiter $$ 
+CREATE PROCEDURE `sp_insert_casedetails`()
+    DETERMINISTIC
+BEGIN
+ 
+ DECLARE exit handler for sqlexception
+   BEGIN
+	-- error
+	SELECT 'SQL error occured : Rollback transaction';
+   ROLLBACK;
+ END;
+   
+ DECLARE exit handler for sqlwarning
+  BEGIN
+	-- WARNING
+	SELECT 'SQL warning : Rollback transaction';
+  ROLLBACK;
+ END;
+ 
+ START TRANSACTION;
+ 
+/* queries   */
+
+insert into covid_db.covid_19_india (date, time, territory, cured, deaths, confirmed) 
+values ('01-10-2021','8:00 AM','Maharashtra',6371728,139067,6550856);
+
+ COMMIT;
+ END
+ 
+ $$
+
+delimiter ;
+
+
+/* call */
+
+mysql> call sp_insert_casedetails();
+

@@ -1,0 +1,32 @@
+use covid_db;
+
+delimiter $$ 
+CREATE PROCEDURE `sp_delete`()
+    DETERMINISTIC
+BEGIN
+ 
+ DECLARE exit handler for sqlexception
+   BEGIN
+	-- error
+	SELECT 'SQL error : Rollback transaction';
+   ROLLBACK;
+ END;
+   
+ DECLARE exit handler for sqlwarning
+  BEGIN
+	-- WARNING
+	SELECT 'SQL warning : Rollback transaction';
+  ROLLBACK;
+ END;
+ 
+ START TRANSACTION;
+ 
+/* queries   */
+
+delete from covid_db.covid_vaccine_statewise where updated_on='15-08-2021';
+
+ COMMIT;
+ END
+ 
+ $$
+ delimiter ;

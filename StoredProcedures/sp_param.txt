@@ -1,0 +1,40 @@
+/* write */ 
+
+delimiter $$
+CREATE PROCEDURE `sp_get_vaccination_by_date`(in inpdate varchar(10))
+    DETERMINISTIC
+BEGIN
+ 
+ DECLARE exit handler for sqlexception
+   BEGIN
+	-- error
+	SELECT 'SQL error occured : Rollback transaction';
+   ROLLBACK;
+ END;
+   
+ DECLARE exit handler for sqlwarning
+  BEGIN
+	-- WARNING
+	SELECT 'SQL warning : Rollback transaction';
+  ROLLBACK;
+ END;
+ 
+ START TRANSACTION;
+ 
+ /* queries */
+	SELECT state, sites, CoviShield_DosesAdministered, Covaxin_DosesAdministered, SputnikV_DosesAdministered 
+    from covid_vaccine_statewise where Updated_On=inpdate;
+
+ COMMIT;
+ 
+ END
+$$
+
+delimiter ;
+
+
+/* call * /
+
+mysql> call sp_get_vaccination_by_date('01-05-2021');
+
+mysql> call sp_get_vaccination_by_date('17-02-2021');

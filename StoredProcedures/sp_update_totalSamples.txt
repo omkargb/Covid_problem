@@ -1,0 +1,40 @@
+/* create */ 
+use covid_db;
+
+delimiter $$ 
+CREATE PROCEDURE `sp_update_totalSamples`()
+    DETERMINISTIC
+BEGIN
+ 
+ DECLARE exit handler for sqlexception
+   BEGIN
+	-- error
+	SELECT 'SQL error occured : Rollback transaction';
+   ROLLBACK;
+ END;
+   
+ DECLARE exit handler for sqlwarning
+  BEGIN
+	-- WARNING
+	SELECT 'SQL warning : Rollback transaction';
+  ROLLBACK;
+ END;
+ 
+ START TRANSACTION;
+ 
+/* queries   */
+
+UPDATE covid_db.statewise_testing_details SET totalsamples=16162816 WHERE date ='10-08-2021' and state = 'West Bengal';
+
+ COMMIT;
+ END
+ 
+ $$
+
+delimiter ;
+
+
+
+/* execute a procedure */ 
+
+mysql> call sp_update_totalSamples();

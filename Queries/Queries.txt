@@ -1,0 +1,37 @@
+/* database create */
+create database covid_db;
+use covid_db;
+
+/* change table/column name */
+
+ALTER TABLE `covid_db`.`statewisetestingdetails` 
+RENAME TO  `covid_db`.`statewise_testing_details` ;
+
+ALTER TABLE `covid_db`.`covid_19_india` 
+CHANGE COLUMN `State/UnionTerritory` `Territory` TEXT NULL DEFAULT NULL ;
+
+ALTER TABLE `covid_db`.`covid_19_india` 
+CHANGE COLUMN `Sno` `Sno` INT NOT NULL AUTO_INCREMENT ,
+ADD PRIMARY KEY (`Sno`);
+;
+
+/* select statements */
+
+select * from covid_db.covid_19_india;
+select * from covid_db.covid_vaccine_statewise;
+select * from covid_db.statewise_testing_details;
+
+
+mysql> select max(confirmed) from covid_db.covid_19_india where Territory='kerala';
++----------------+
+| max(confirmed) |
++----------------+
+|        3586693 |
++----------------+
+
+mysql> select sum(Cured) from covid_db.covid_19_india where Territory='delhi';
++------------+
+| sum(Cured) |
++------------+
+|  273419887 |
++------------+
