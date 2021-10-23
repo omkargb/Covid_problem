@@ -1,0 +1,40 @@
+/* create cursor */
+use covid_db;
+select * from covid_db.statewise_testing_details;
+
+DELIMITER $$
+CREATE PROCEDURE sp_cursor_state_list (
+	INOUT state_list varchar(4000)
+)
+BEGIN
+	DECLARE finished INTEGER DEFAULT 0;
+	DECLARE stateName varchar(100) DEFAULT "";
+
+	-- declare cursor for employee email
+	DEClARE currstate	CURSOR FOR 
+	SELECT distinct State FROM covid_db.statewise_testing_details;
+
+	-- declare NOT FOUND handler
+	DECLARE CONTINUE HANDLER 
+        FOR NOT FOUND SET finished = 1;
+
+	OPEN currstate;
+	getstate: LOOP
+		FETCH currstate INTO stateName;
+		IF finished = 1 THEN 
+			LEAVE getstate;
+		END IF;
+		-- build states List, separate by comma
+		SET state_list = CONCAT(stateName,",",state_list);
+	END LOOP getstate;
+	CLOSE currstate;
+
+END
+$$
+DELIMITER ;
+
+/* calling a cursor */
+
+SET @state_list = ""; 
+CALL sp_cursor_state_list(@state_list); 
+SELECT @state_list;
