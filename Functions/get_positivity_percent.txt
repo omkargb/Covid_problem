@@ -10,7 +10,7 @@ DETERMINISTIC
     Select (positive*100.00) / TotalSamples into positive_rate FROM covid_db.statewise_testing_details 
     where State=area AND Date=indate;
     return positive_rate;
-    END 
+    END
     //
 DELIMITER ; 
 

@@ -10,6 +10,6 @@ WHERE positive=1;
 /* execute */
 
 mysql> select * from one_pt_positive;
-select date, cured , deaths, confirmed from covid_19_india;
+
 /* drop view */
 DROP VIEW one_pt_positive;
