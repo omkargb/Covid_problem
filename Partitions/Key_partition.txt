@@ -1,0 +1,62 @@
+/* create */
+
+use covid_db;
+
+CREATE TABLE `states_testing_details` (
+  `sno` int primary key,
+  `Date` text,
+  `State` text,
+  `TotalSamples` bigint DEFAULT NULL,
+  `Negative` bigint DEFAULT NULL,
+  `Positive` int DEFAULT NULL
+)
+PARTITION BY KEY()  
+PARTITIONS 3; 
+
+/* add rows to table */
+
+----------------------------------------------------------------
+
+/* check partition */ 
+
+mysql> SELECT PARTITION_NAME,TABLE_ROWS
+    -> FROM INFORMATION_SCHEMA.PARTITIONS
+    -> WHERE TABLE_NAME = 'states_testing_details';
++----------------+------------+
+| PARTITION_NAME | TABLE_ROWS |
++----------------+------------+
+| p0             |        105 |
+| p1             |         80 |
+| p2             |         81 |
++----------------+------------+
+3 rows in set (0.08 sec)
+
+mysql> explain select * from states_testing_details;
++----+-------------+------------------------+------------+------+---------------+------+---------+------+------+----------+-------+
+| id | select_type | table                  | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra |
++----+-------------+------------------------+------------+------+---------------+------+---------+------+------+----------+-------+
+|  1 | SIMPLE      | states_testing_details | p0,p1,p2   | ALL  | NULL          | NULL | NULL    | NULL |  266 |   100.00 | NULL  |
++----+-------------+------------------------+------------+------+---------------+------+---------+------+------+----------+-------+
+1 row in set, 1 warning (0.00 sec)
+
+mysql> explain select * from states_testing_details where sno=27;
++----+-------------+------------------------+------------+-------+---------------+---------+---------+-------+------+----------+-------+
+| id | select_type | table                  | partitions | type  | possible_keys | key     | key_len | ref   | rows | filtered | Extra |
++----+-------------+------------------------+------------+-------+---------------+---------+---------+-------+------+----------+-------+
+|  1 | SIMPLE      | states_testing_details | p2         | const | PRIMARY       | PRIMARY | 4       | const |    1 |   100.00 | NULL  |
++----+-------------+------------------------+------------+-------+---------------+---------+---------+-------+------+----------+-------+
+
+mysql> explain select * from states_testing_details where sno=5;
++----+-------------+------------------------+------------+-------+---------------+---------+---------+-------+------+----------+-------+
+| id | select_type | table                  | partitions | type  | possible_keys | key     | key_len | ref   | rows | filtered | Extra |
++----+-------------+------------------------+------------+-------+---------------+---------+---------+-------+------+----------+-------+
+|  1 | SIMPLE      | states_testing_details | p0         | const | PRIMARY       | PRIMARY | 4       | const |    1 |   100.00 | NULL  |
++----+-------------+------------------------+------------+-------+---------------+---------+---------+-------+------+----------+-------+
+1 row in set, 1 warning (0.00 sec)
+
+mysql> explain select * from states_testing_details where sno=6;
++----+-------------+------------------------+------------+-------+---------------+---------+---------+-------+------+----------+-------+
+| id | select_type | table                  | partitions | type  | possible_keys | key     | key_len | ref   | rows | filtered | Extra |
++----+-------------+------------------------+------------+-------+---------------+---------+---------+-------+------+----------+-------+
+|  1 | SIMPLE      | states_testing_details | p1         | const | PRIMARY       | PRIMARY | 4       | const |    1 |   100.00 | NULL  |
++----+-------------+------------------------+------------+-------+---------------+---------+---------+-------+------+----------+-------+
