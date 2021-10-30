@@ -1,0 +1,32 @@
+-- third highest record
+
+SELECT * FROM covid_db.testing 
+order by Positive desc
+limit 2,1;
+
+
+/*  first and last record */
+
+SELECT * FROM covid_db.testing 
+where date=(select min(date) from covid_db.testing);
+SELECT * FROM covid_db.testing 
+where date=(select max(date) from covid_db.testing);
+
+
+/* copy existing table data and schema into new table */
+
+create table mhtest as SELECT * FROM covid_db.testing ;
+
+
+/* copy existing table schema into new table */
+
+create table mhtest as SELECT * FROM covid_db.testing where 1=0;
+
+
+/* get latest/last 5 records */
+
+SELECT * FROM (SELECT * FROM covid_db.testing order by sno desc limit 5)
+last5 order by sno asc;
+
+SELECT * FROM covid_db.testing order by sno desc limit 5
+
