@@ -1,0 +1,8 @@
+1. group by territory
+= Table.Group(covid_db_covid_19_india, {"Territory"}, {{"max_of_area", each List.Max([Confirmed]), type nullable number}})
+
+
+2. current date time display
+datetime = NOW()
+
+3. count_covid_cases_above_10L = COUNTROWS(FILTER('confirmed_cases_group','confirmed_cases_group'[Cases_in_area]>1000000))4.positive_by_date = CALCULATETABLE(    values('covid_db testing'[Positive]), FILTER(    'covid_db testing',    'covid_db testing'[Date] = DATE(2020,06,10)))
