@@ -9,6 +9,7 @@ limit 2,1;
 
 SELECT * FROM covid_db.testing 
 where date=(select min(date) from covid_db.testing);
+
 SELECT * FROM covid_db.testing 
 where date=(select max(date) from covid_db.testing);
 
