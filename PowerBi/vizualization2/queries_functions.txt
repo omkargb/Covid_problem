@@ -1,0 +1,6 @@
+Left outer join
+= Table.NestedJoin(WeeklyVaccination, {"week"}, weeklyAgeWiseVaccination, {"week"}, "weeklyAgeWiseVaccination", JoinKind.LeftOuter)
+
+
+conditional column
+= Table.AddColumn(#"Renamed Columns", "status", each if [total] < 15000000 then "Ok" else if [total] < 35000000 then "Good" else if [total] > 35000000 then "Best" else "")

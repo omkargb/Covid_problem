@@ -31,3 +31,84 @@ last5 order by sno asc;
 
 SELECT * FROM covid_db.testing order by sno desc limit 5
 
+
+
+/* exists keyword - using subquery */
+
+mysql> select max(FirstDoseAdministered) from covid_db.covid_vaccine_statewise
+where exists(select territory from covid_db.covid_cases where State='abcd');
++----------------------------+
+| max(FirstDoseAdministered) |
++----------------------------+
+|                       NULL |
++----------------------------+
+1 row in set (0.01 sec)
+
+mysql>
+select max(FirstDoseAdministered) from covid_db.covid_vaccine_statewise 
+where exists(select territory from covid_db.covid_cases where State='punjab');
++----------------------------+
+| max(FirstDoseAdministered) |
++----------------------------+
+|                    8005636 |
++----------------------------+
+1 row in set (0.01 sec)
+
+
+---------------------------------------------------------------------------------------
+
+-- CASE STATEMANTS --
+
+select date as sample_date, TotalSamples, Positive, 
+CASE 
+when positive > (totalsamples * 0.2) then 'High' 
+when positive > (totalsamples * 0.1) then 'Medium' 
+when positive=0 then '--' 
+else 'Low' 
+end as Positivity_status 
+from covid_db.testing;
+
++-------------+--------------+----------+-------------------+
+| sample_date | TotalSamples | Positive | Positivity_status |
++-------------+--------------+----------+-------------------+
+| 09-04-2020  |        20877 |      868 | Low               |
+| 10-04-2020  |        30000 |     1135 | Low               |
+| 15-04-2020  |        45142 |     2690 | Low               |
+	
+...
+| 28-08-2020  |      3939761 |   764556 | Medium            |
+| 29-08-2020  |      4017175 |   780957 | Medium            |
+| 03-09-2020  |      4382985 |   862012 | Medium            |
+| 04-09-2020  |      4474971 |   882550 | Medium            |
+| 11-09-2020  |      5072521 |  1015681 | High              |
+| 12-09-2020  |      5164840 |  1037765 | High              |
+	...
+| 30-09-2020  |      6785205 |  1384446 | High              |
+| 05-10-2020  |      7169887 |  1453653 | High              |
+| 06-10-2020  |      7241376 |  1465911 | High              |
+| 11-10-2020  |      7643584 |  1528226 | Medium            |
+| 12-10-2020  |      7697906 |  1535315 | Medium            |
+| 15-10-2020  |      7914651 |  1564615 | Medium            |
+| 16-10-2020  |      7989693 |  1576062 | Medium            |
+| 17-10-2020  |      8069100 |  1586321 | Medium            |
+| 18-10-2020  |      8139466 |  1595381 | Medium            |
+| 07-11-2020  |      9378531 |        0 | --                |
+| 12-11-2020  |      9664275 |        0 | --                |
+| 13-11-2020  |      9722961 |        0 | --                |
++-------------+--------------+----------+-------------------+
+
+
+
+/* upper case , lower case output in query */
+
+SELECT UPPER(state) FROM covid_db.covid_vaccine_statewise;
+
+
+/* join 3 tables */
+SELECT column1, column2
+FROM TableA
+JOIN TableB ON TableA.Column3 = TableB.Column3
+JOIN TableC ON TableA.Column4 = TableC.Column4;
+
+
+---------------------------------------------------------------------------------------
