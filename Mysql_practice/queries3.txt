@@ -1,0 +1,65 @@
+
+-- -- COMPLEX QUERIES -- --
+
+-- using multiple table joins, aggregate functions and mathematical operations , alias, clauses and nested queries
+
+
+1 -- Total sell of products
+
+select t1.productBrand, t1.productName, t1.productPrice as price, 
+t2.quantity as store_quantity, 
+(select sum(t3.soldNos)) as sold , (t2.quantity+sum(t3.soldNos)) as total_products 
+from products t1 
+left join store t2 on  t1.productId=t2.productId 
+inner join sell t3 on t2.productId=t3.productId 
+GROUP BY t1.productId;
+
++--------------+----------------------+-------+----------------+------+----------------+
+| productBrand | productName          | price | store_quantity | sold | total_products |
++--------------+----------------------+-------+----------------+------+----------------+
+| ponds        | sandal talcum powder |    50 |             20 |    5 |             25 |
+| nestle       | maggi noodles        |    25 |             15 |    5 |             20 |
+| dairy milk   | cadbury              |    10 |             15 |    5 |             20 |
+| volini       | pain relief spray    |    40 |              5 |    5 |             10 |
+| xyz          | wooden ball toy      |   120 |              9 |    6 |             15 |
+| abcd         | color spray          |   100 |              7 |   18 |             25 |
++--------------+----------------------+-------+----------------+------+----------------+
+
+
+2 -- Products having more sell 
+
+select t1.productBrand, t1.productName, t1.productPrice as price, t2.quantity as store_quantity, 
+(select sum(t3.soldNos) ) as sold  
+from products t1 
+left join store t2 on  t1.productId=t2.productId 
+inner join sell t3 on t2.productId=t3.productId 
+GROUP BY t1.productId 
+HAVING sum(t3.soldNos) >10;
+
++--------------+---------------+-------+----------------+------+
+| productBrand | productName   | price | store_quantity | sold |
++--------------+---------------+-------+----------------+------+
+| nestle       | maggi noodles |    25 |              3 |   17 |
+| dairy milk   | cadbury       |    10 |              9 |   11 |
+| abcd         | color spray   |   100 |              7 |   18 |
++--------------+---------------+-------+----------------+------+
+
+
+3 -- Products having less quantity present in store
+
+select t1.productBrand, t1.productName, t1.productPrice as price, 
+(t2.quantity + sum(t3.soldNos)) as total_products, 
+t2.quantity as current_store_quantity, (select sum(t3.soldNos)) as sold_Quantity 
+from products t1 
+left join store t2 on  t1.productId=t2.productId 
+inner join sell t3 on t1.productId=t3.productId 
+GROUP BY t1.productId 
+HAVING t2.quantity <=7;
+
++--------------+-------------------+-------+----------------+------------------------+---------------+
+| productBrand | productName       | price | total_products | current_store_quantity | sold_Quantity |
++--------------+-------------------+-------+----------------+------------------------+---------------+
+| nestle       | maggi noodles     |    25 |             20 |                      3 |            17 |
+| volini       | pain relief spray |    40 |             10 |                      5 |             5 |
+| abcd         | color spray       |   100 |             25 |                      7 |            18 |
++--------------+-------------------+-------+----------------+------------------------+---------------+
