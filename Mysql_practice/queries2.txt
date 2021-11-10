@@ -1,0 +1,177 @@
+-- CONSTRAINTS --
+
+-- -- CREATE
+create database example;
+use example;
+
+create table categories(
+categoryId int auto_increment primary key,
+categoryName varchar (64) not null );
+
+create table products (
+sno int auto_increment primary key,
+productId varchar(64) not null,
+productBrand varchar(64) not null,
+productName varchar(64) not null,
+categoryId int,
+constraint fk_category foreign key (categoryId) references categories(categoryId),
+productInDate date null,
+productPrice Int not null ,
+constraint c_price check (productPrice >= 1 AND productPrice <=50000),
+productMaterial varchar(16) ,
+constraint c_material check (productMaterial in ('hard solid','soft solid','fragile','powder crystals','liquid','gas','gel')),
+productOfIndia char(1) ,
+constraint c_productOfIndia check (productOfIndia in ('y','Y','n','N') )
+);
+
+CREATE TABLE sell (
+  `sno` int NOT NULL AUTO_INCREMENT,
+  `productId` varchar(16) DEFAULT NULL,
+  `soldNos` int DEFAULT NULL,
+  `soldTime` datetime DEFAULT NULL,
+  PRIMARY KEY (`sno`)
+)
+
+CREATE TABLE store (
+  `sno` int NOT NULL AUTO_INCREMENT,
+  `productId` varchar(16) DEFAULT NULL,
+  `quantity` int DEFAULT NULL,
+  PRIMARY KEY (`sno`)
+)
+
+---------------------------------------------------------------------------------------
+
+-- -- INSERT 
+
+insert into categories (categoryName) values('Beauty products'); insert into categories (categoryName) values('veg-nonveg food');
+insert into categories (categoryName) values('dairy product'); insert into categories (categoryName) values('decoration material');
+insert into categories (categoryName) values('medicine');
+
++------------+---------------------+
+| categoryId | categoryName        |
++------------+---------------------+
+|          1 | Beauty products     |
+|          2 | veg-nonveg food     |
+|          3 | dairy product       |
+|          4 | decoration material |
+|          5 | medicine            |
++------------+---------------------+
+
+insert into example.products (productId,productBrand,productName,categoryId,productInDate,productPrice,productMaterial,productOfIndia ) 
+values(1, 'ponds', 'sandal talcum powder',1, '2021-11-01', 50, 'powder crystals','Y');
+
+mysql> Select * from example.products;
++-----+-----------+--------------+----------------------+------------+---------------+--------------+-----------------+----------------+
+| sno | productId | productBrand | productName          | categoryId | productInDate | productPrice | productMaterial | productOfIndia |
++-----+-----------+--------------+----------------------+------------+---------------+--------------+-----------------+----------------+
+|   1 | 1         | ponds        | sandal talcum powder |          1 | 2021-11-01    |           50 | powder crystals | Y              |
++-----+-----------+--------------+----------------------+------------+---------------+--------------+-----------------+----------------+
+1 row in set (0.00 sec)
+
+
+mysql> insert into example.products (productId,productBrand,productName,categoryId,productInDate,productPrice,productMaterial,productOfIndia ) values(2, 'ponds', 'lavender talcum powder',1, '2021-11-01', 50, 'powder','Y');
+
+-- ERROR 3819 (HY000): Check constraint 'c_material' is violated.
+
+---------------------------------------------------------------------------------------
+
+-- -- SELECT 
+
+/* GET ALL CONSTRAINTS */
+ 
+mysql> select * from information_schema.table_constraints where table_name='products';
+
++--------------------+-------------------+------------------+--------------+------------+-----------------+----------+
+| CONSTRAINT_CATALOG | CONSTRAINT_SCHEMA | CONSTRAINT_NAME  | TABLE_SCHEMA | TABLE_NAME | CONSTRAINT_TYPE | ENFORCED |
++--------------------+-------------------+------------------+--------------+------------+-----------------+----------+
+| def                | example           | PRIMARY          | example      | products   | PRIMARY KEY     | YES      |
+| def                | example           | fk_category      | example      | products   | FOREIGN KEY     | YES      |
+| def                | example           | c_price          | example      | products   | CHECK           | YES      |
+| def                | example           | c_material       | example      | products   | CHECK           | YES      |
+| def                | example           | c_productOfIndia | example      | products   | CHECK           | YES      |
+| def                | product_db        | PRIMARY          | product_db   | products   | PRIMARY KEY     | YES      |
+| def                | product_db        | products_ibfk_1  | product_db   | products   | FOREIGN KEY     | YES      |
++--------------------+-------------------+------------------+--------------+------------+-----------------+----------+
+7 rows in set (0.00 sec)
+
+
+-- -- AGGREGATE FUNCTIONS, CLAUSES, INBUILT FUNCTIONS
+
+use example;
+
+select * from products order by categoryId ASC;
+
+select * from products order by categoryId DESC;
+
+select * from products group by categoryId ;
+
+select * from products where productprice between 10 and 30 ;
+
+select * from products group by categoryId HAVING productprice > 20;
+
+select * from store group by productId HAVING quantity <= 10;
+
+select concat('fname',' ','mname',' ','lname') as fullName;
++-------------------+
+| fullName          |
++-------------------+
+| fname mname lname |
++-------------------+
+
+select concat_ws('_','fname','mname','lname') as fullName;
++-------------------+
+| fullName          |
++-------------------+
+| fname_mname_lname |
++-------------------+
+
+select reverse('example');
++--------------------+
+| reverse('example') |
++--------------------+
+| elpmaxe            |
++--------------------+
+
+select floor(rand()*10);	/* number between 0-9 */
++------------------+
+| floor(rand()*10) |
++------------------+
+|                9 |
++------------------+
+
+update products set productId = replace(productId, 'p','pro');
+
+
+---------------------------------------------------------------------------------------
+
+-- -- TRIGERS 
+
+DELIMITER //  
+Create Trigger before_product_sold
+BEFORE INSERT ON example.sell 
+FOR EACH ROW BEGIN  
+declare storeNos varchar(8);
+ declare error_message1 varchar(255);
+ declare error_message2 varchar(255);
+	set error_message2=('Product quantity is zero.');     
+set storeNos = (select quantity from store where productId=new.productId);
+IF (storeNos = 0) then 
+	signal sqlstate '45000' set message_text=error_message2;
+ELSEIF 	
+	(storeNos - new.soldNos) < 0 then 
+set error_message1 = concat('Please select Product quantity less than : ', storeNos);   
+signal sqlstate '45000' set message_text = error_message1;
+end IF;
+END 
+//  
+
+
+DELIMITER //  
+Create Trigger after_product_sold
+AFTER INSERT ON example.sell FOR EACH ROW  
+BEGIN  
+	update example.store set quantity=quantity-new.soldnos 
+	where productId=new.productId;  
+END 
+//  
+
